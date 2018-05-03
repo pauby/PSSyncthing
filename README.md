@@ -1,4 +1,4 @@
-# __MODULENAME__
+# PSSyncthing
 
 Allows you to manage Syncthing from PowerShell
 
