@@ -1,0 +1,10 @@
+TOPIC
+    about_pssyncthing
+
+SHORT DESCRIPTION
+
+    Allows you to manage Syncthing from PowerShell
+    
+LONG DESCRIPTION
+
+    Allows you to manage Syncthing from PowerShell
