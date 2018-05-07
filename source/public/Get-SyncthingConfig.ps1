@@ -25,8 +25,8 @@ function Get-SyncthingConfig {
     [CmdletBinding()]
     Param (
         # ComputerName to connect to that has Syncthing running. Defaults to 'localhost'.
-        [Parameter(ValueFromPipelineByPropertyName)]
-        [string]
+        [Parameter(ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [string[]]
         $ComputerName = 'localhost',
 
         # Port Syncthing is listening on. Defaults to '8384'.
@@ -38,21 +38,29 @@ function Get-SyncthingConfig {
         # Syncthing API Key to use to connect.
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string]
-        $ApiKey,
-
-        # Validates the Syncthing SSL certificate. By default this is skipped as
-        # most Syncthing certificates are self-signed.
-        [switch]
-        $ValidateCertificate
+        $ApiKey
     )
     
-    $params = @{
-        ComputerName        = $ComputerName
-        Port                = $Port
-        ApiKey              = $ApiKey
-        Endpoint            = '/system/config'
-        ValidateCertificate = $ValidateCertificate.IsPresent
+    Begin {
+        $params = @{
+            Port                = $Port
+            ApiKey              = $ApiKey
+            Endpoint            = '/system/config'
+        }
     }
 
-    Invoke-SyncthingRequest @params 
+    Process {
+        ForEach ($name in $ComputerName) {
+            Write-Verbose "Getting Syncthing configuration from '$name'."
+            $params.ComputerName = $name
+
+            $response = Invoke-SyncthingRequest @params
+            if ($null -eq $response) {
+                return $null
+            }
+            else {
+                return $response
+            }
+        }
+    }
 }
