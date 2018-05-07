@@ -4,6 +4,8 @@ function Invoke-SyncthingRequest {
         Invokes a REST request to Syncthing.
     .DESCRIPTION
         Invokes a REST request to Syncthing running on a computer.
+
+        If you need to disable Syncthing SSL certificate validation use the Diable-SyncthingCertValidation
     .EXAMPLE
         Invoke-SyncthingRequest -ApiKey 'abc123' -EndPoint '/system/browse'
 
@@ -25,7 +27,7 @@ function Invoke-SyncthingRequest {
     Param (
         # ComputerName to connect to that has Syncthing running. Defaults to 'localhost'.
         [Parameter(ValueFromPipelineByPropertyName)]
-        [string]
+        [string[]]
         $ComputerName = 'localhost',
 
         # Port Syncthing is listening on. Defaults to '8384'.
@@ -54,52 +56,8 @@ function Invoke-SyncthingRequest {
         # = value } format (ie. a hashtable).
         [Parameter(ValueFromPipelineByPropertyName)]
         [hashtable]
-        $EndpointParameter,
-
-        # Validates the Syncthing SSL certificate. By default this is skipped as
-        # most Syncthing certificates are self-signed.
-        [switch]
-        $ValidateCertificate
+        $EndpointParameter
     )
-
-    if (-not $ValidateCertificate.IsPresent) {
-        Write-Verbose 'Certificate validation is being ignored.'
-
-        # if we do not ignore certificate validation then self-signed
-        # certificates will throw up errors - this code ignore the certificate
-        # validation - taken from
-        # https://blog.ukotic.net/2017/08/15/could-not-establish-trust-relationship-for-the-ssltls-invoke-webrequest/
-        if (-not ([System.Management.Automation.PSTypeName]'ServerCertificateValidationCallback').Type) {
-            $certCallback = @"
-using System;
-using System.Net;
-using System.Net.Security;
-using System.Security.Cryptography.X509Certificates;
-public class ServerCertificateValidationCallback
-{
-    public static void Ignore()
-    {
-        if(ServicePointManager.ServerCertificateValidationCallback ==null)
-        {
-            ServicePointManager.ServerCertificateValidationCallback += 
-                delegate
-                (
-                    Object obj, 
-                    X509Certificate certificate, 
-                    X509Chain chain, 
-                    SslPolicyErrors errors
-                )
-                {
-                    return true;
-                };
-        }
-    }
-}
-"@
-            Add-Type $certCallback
-        }
-        [ServerCertificateValidationCallback]::Ignore()
-    }
 
     # the Headers parameter needs a hashtable so lets create one with
     # Syncthing's API Key
