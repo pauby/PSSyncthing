@@ -53,16 +53,7 @@ function Test-SyncthingConfigInSync {
         ForEach ($name in $ComputerName) {
             Write-Verbose "Checking configuration sync status of '$name'."
             $params.ComputerName = $name
-
-            try {
-                $response = Invoke-SyncthingRequest @params
-            }
-            catch {
-                Write-Verbose "Had a problem getting the configuration of Syncthing on '$name'."
-                return $null
-            }
-
-            return $response.configInSync
+            (Invoke-SyncthingRequest @params).configInSync
         }
     }
 
