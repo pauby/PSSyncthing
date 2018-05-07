@@ -23,7 +23,7 @@ function Invoke-SyncthingRequest {
     [OutputType([PSCustomObject])]
     [CmdletBinding()]
     Param (
-        # ComputerName to connect to. Defaults to 'localhost'.
+        # ComputerName to connect to that has Syncthing running. Defaults to 'localhost'.
         [Parameter(ValueFromPipelineByPropertyName)]
         [string]
         $ComputerName = 'localhost',
