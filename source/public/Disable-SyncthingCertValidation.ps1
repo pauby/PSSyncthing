@@ -35,7 +35,7 @@ public class ServerCertificateValidationCallback
 {
     public static void Ignore()
     {
-        if(ServicePointManager.ServerCertificateValidationCallback ==null)
+        if(ServicePointManager.ServerCertificateValidationCallback == null)
         {
             ServicePointManager.ServerCertificateValidationCallback += 
                 delegate
